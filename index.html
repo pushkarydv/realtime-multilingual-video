@@ -43,7 +43,7 @@
                 <div class="video-container w-full relative">
                     <video id="videoPlayer" controls
                         class="w-full h-[400px] rounded-lg bg-black hidden object-contain"></video>
-                    <label for="filePicker" class="w-full">
+                    <!-- <label for="filePicker" class="w-full">
                         <div id="placeholder"
                             class="inset-0 flex flex-col items-center justify-center h-[400px] bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-gray-100 transition-all cursor-pointer">
                             <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor"
@@ -56,7 +56,9 @@
                             <p class="text-base text-gray-600">Drop your video or click to browse</p>
                         </div>
                     </label>
-                    <input type="file" id="filePicker" accept="video/*" class="hidden">
+                    <input type="file" id="filePicker" accept="video/*" class="hidden"> -->
+                    <button type="button" id="select-file-button" class="bg-black text-white p-2">Open a File</button>
+                    File path: <strong id="filePath"></strong>
                 </div>
             </div>
             <!-- Button to trigger custom algo method: extractes audio from video to m4a -->

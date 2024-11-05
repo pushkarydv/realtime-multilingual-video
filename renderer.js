@@ -1,51 +1,52 @@
-const filePicker = document.getElementById('filePicker');
-const videoPlayer = document.getElementById('videoPlayer');
+// const filePicker = document.getElementById("filePicker");
+// const videoPlayer = document.getElementById("videoPlayer");
 
-filePicker.addEventListener('change', (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const videoUrl = URL.createObjectURL(file);
-    console.log(videoUrl);
-    
-    videoPlayer.style.display = 'block';
-    videoPlayer.src = videoUrl;
-  }
-});
+// filePicker.addEventListener("change", (event) => {
+//   const file = event.target.files[0];
+//   if (file) {
+//     const videoUrl = URL.createObjectURL(file);
+//     console.log(file.path);
 
-document.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-});
+//     videoPlayer.style.display = "block";
+//     videoPlayer.src = videoUrl;
+//   }
+// });
 
-document.addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('video/')) {
-        const videoUrl = URL.createObjectURL(file);
-        videoPlayer.style.display = 'block';
-        videoPlayer.src = videoUrl;
-        document.getElementById('placeholder').style.display = 'none';
-    }
-});
+// document.addEventListener("dragover", (e) => {
+//   e.preventDefault();
+//   e.stopPropagation();
+// });
 
-videoPlayer.addEventListener('loadeddata', () => {
-    document.getElementById('placeholder').style.display = 'none';
-});
+// document.addEventListener("drop", (e) => {
+//   e.preventDefault();
+//   e.stopPropagation();
 
-filePicker.addEventListener('click', (e) => {
-    e.stopPropagation();
-});
+//   const file = e.dataTransfer.files[0];
+//   if (file && file.type.startsWith("video/")) {
+//     const videoUrl = URL.createObjectURL(file);
+//     console.log(file);
+//     videoPlayer.style.display = "block";
+//     videoPlayer.src = videoUrl;
+//     document.getElementById("placeholder").style.display = "none";
+//   }
+// });
 
-document.getElementById('placeholder').addEventListener('click', () => {
-    filePicker.click();
-});
+// videoPlayer.addEventListener("loadeddata", () => {
+//   document.getElementById("placeholder").style.display = "none";
+// });
 
-videoPlayer.addEventListener('error', () => {
-    videoPlayer.style.display = 'none';
-    document.getElementById('placeholder').style.display = 'flex';
-});
+// filePicker.addEventListener("click", (e) => {
+//   e.stopPropagation();
+// });
+
+// document.getElementById("placeholder").addEventListener("click", () => {
+//   filePicker.click();
+// });
+
+// videoPlayer.addEventListener("error", () => {
+//   videoPlayer.style.display = "none";
+//   document.getElementById("placeholder").style.display = "flex";
+// });
 
 // Custom Method to extract audio from video
 // async function extractAudioFromVideoFile(file) {
@@ -56,10 +57,10 @@ videoPlayer.addEventListener('error', () => {
 
 //     const audioContext = new AudioContext();
 //     const arrayBuffer = await file.arrayBuffer();
-    
+
 //     // Decode the audio data
 //     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    
+
 //     // Create an offline context to render audio
 //     const offlineContext = new OfflineAudioContext(
 //         audioBuffer.numberOfChannels,
@@ -75,7 +76,7 @@ videoPlayer.addEventListener('error', () => {
 
 //     // Render the audio
 //     const renderedBuffer = await offlineContext.startRendering();
-    
+
 //     // Convert to WAV format
 //     const wavBlob = audioBufferToWav(renderedBuffer);
 //     const audioUrl = URL.createObjectURL(wavBlob);
@@ -98,7 +99,7 @@ videoPlayer.addEventListener('error', () => {
 // function audioBufferToWav(buffer) {
 //     const length = buffer.length * buffer.numberOfChannels * 2;
 //     const view = new DataView(new ArrayBuffer(44 + length));
-    
+
 //     // Write WAV header
 //     writeString(view, 0, 'RIFF');
 //     view.setUint32(4, 36 + length, true);
@@ -145,3 +146,11 @@ videoPlayer.addEventListener('error', () => {
 //         extractAudioFromVideoFile(fileInput.files[0]);
 //     });
 // });
+
+const selectFileutton = document.getElementById("select-file-button");
+const filePathElement = document.getElementById("filePath");
+
+selectFileutton.addEventListener("click", async () => {
+  const filePath = await window.electron.openFile();
+  filePathElement.innerText = filePath;
+});

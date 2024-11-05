@@ -1,7 +1,19 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('path');
 
 let win;
+
+async function handleFileOpen () {
+    const { canceled, filePaths } = await dialog.showOpenDialog({
+        filters: [{
+            name: 'videos',
+            extensions: ["mp4"]
+        }]
+    })
+    if (!canceled) {
+      return filePaths[0]
+    }
+  }
 
 function createWindow() {
     win = new BrowserWindow({
@@ -37,6 +49,13 @@ ipcMain.handle('window-maximize', () => {
     }
 });
 
+ipcMain.handle('dialog:openFile', handleFileOpen)
+
+// ipcMain.handle('create-translation', async (filePath) => {
+//     await 
+// })
+
+
 app.on('ready', createWindow);
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
@@ -44,3 +63,5 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
+
+
