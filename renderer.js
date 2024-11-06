@@ -1,5 +1,5 @@
 const videoPlayer = document.getElementById("videoPlayer");
-
+const TRANSLATION_DATA = [];
 
 // Custom Method to extract audio from video
 // async function extractAudioFromVideoFile(file) {
@@ -101,6 +101,9 @@ const videoPlayer = document.getElementById("videoPlayer");
 // });
 
 const selectFileButton = document.getElementById("select-file-button");
+const generateTranslationsButton = document.getElementById(
+  "generate-translations-button"
+);
 
 selectFileButton.addEventListener("click", async () => {
   const filePath = await window.electron.openFile();
@@ -108,5 +111,32 @@ selectFileButton.addEventListener("click", async () => {
     selectFileButton.style.display = "none";
     videoPlayer.style.display = "block";
     videoPlayer.src = filePath;
+    generateTranslationsButton.style.display = "block";
   }
+});
+
+const translationTextDiv = document.getElementById("translation-text");
+
+generateTranslationsButton.addEventListener("click", async () => {
+  const filePath = videoPlayer.src;
+  const { translation } = await window.electron.generateTranslation(filePath);
+  TRANSLATION_DATA.push(...translation.segments);
+  generateTranslationsButton.style.display = "none";
+  translationTextDiv.style.display = "block";
+});
+
+
+videoPlayer.addEventListener("timeupdate", () => {
+    const segments = TRANSLATION_DATA;
+    const totalDuration = videoPlayer.duration;
+    const currentTime = videoPlayer.currentTime;
+
+    const segmentDuration = totalDuration / segments.length;
+    const currentSegmentIndex = Math.floor(currentTime / segmentDuration);
+
+    if (currentSegmentIndex >= 0 && currentSegmentIndex < segments.length) {
+        translationTextDiv.textContent = segments[currentSegmentIndex].text;
+    } else {
+        translationTextDiv.textContent = "";
+    }
 });
