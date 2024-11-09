@@ -715,6 +715,10 @@ video {
   border-color: rgb(229 229 229 / var(--tw-border-opacity));
 }
 
+.border-black\/10 {
+  border-color: rgb(0 0 0 / 0.1);
+}
+
 .bg-\[\#1AAB29\]\/20 {
   background-color: rgb(26 171 41 / 0.2);
 }
@@ -813,6 +817,11 @@ video {
   padding-right: 1.5rem;
 }
 
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -867,6 +876,11 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-black\/5 {
+  --tw-shadow-color: rgb(0 0 0 / 0.05);
+  --tw-shadow: var(--tw-shadow-colored);
+}
+
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -887,6 +901,16 @@ video {
 
 .\[app-region\:no-drag\] {
   app-region: no-drag;
+}
+
+.empty\:px-0:empty {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.empty\:py-0:empty {
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 
 .hover\:bg-\[\#1AAB29\]:hover {

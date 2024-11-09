@@ -100,6 +100,42 @@ const TRANSLATION_DATA = [];
 //     });
 // });
 
+
+async function generateSHA256Checksum(file) {
+  // Create a FileReader to read the video file
+  const fileReader = new FileReader();
+
+  return new Promise((resolve, reject) => {
+    // When the file is successfully read, generate the checksum
+    fileReader.onload = async (event) => {
+      try {
+        const arrayBuffer = event.target.result;
+
+        // Use crypto.subtle.digest to calculate the SHA-256 hash
+        const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+
+        // Convert the ArrayBuffer hash to a hexadecimal string
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+
+        resolve(hashHex);
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    fileReader.readAsArrayBuffer(file);
+  });
+}
+async function generateSHA256ChecksumFromFilePath(filePath) {
+  const response = await fetch(filePath);
+  const arrayBuffer = await response.arrayBuffer();
+  const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+}
+
 const selectFileButton = document.getElementById("select-file-button");
 const generateTranslationsButton = document.getElementById(
   "generate-translations-button"
@@ -119,24 +155,40 @@ const translationTextDiv = document.getElementById("translation-text");
 
 generateTranslationsButton.addEventListener("click", async () => {
   const filePath = videoPlayer.src;
+  // this will be used to uniquely identify file and fetch file form .cache folder
+  const checksum = await generateSHA256ChecksumFromFilePath(filePath);
+
+  // check if translation data is already present in .cache folder
+  const translationData = await window.electron.getTranslation(checksum);
+  if (translationData) {
+    TRANSLATION_DATA.push(...translationData.segments);
+    generateTranslationsButton.style.display = "none";
+    translationTextDiv.style.display = "block";
+    return;
+  }
+  
   const { translation } = await window.electron.generateTranslation(filePath);
   TRANSLATION_DATA.push(...translation.segments);
+
+  // create a file in .cache folder with checksum as name and save the translation data
+  await window.electron.saveTranslation(checksum, translation);
+
   generateTranslationsButton.style.display = "none";
   translationTextDiv.style.display = "block";
 });
 
 
 videoPlayer.addEventListener("timeupdate", () => {
-    const segments = TRANSLATION_DATA;
-    const totalDuration = videoPlayer.duration;
-    const currentTime = videoPlayer.currentTime;
+  const segments = TRANSLATION_DATA;
+  const totalDuration = videoPlayer.duration;
+  const currentTime = videoPlayer.currentTime;
 
-    const segmentDuration = totalDuration / segments.length;
-    const currentSegmentIndex = Math.floor(currentTime / segmentDuration);
+  const segmentDuration = totalDuration / segments.length;
+  const currentSegmentIndex = Math.floor(currentTime / segmentDuration);
 
-    if (currentSegmentIndex >= 0 && currentSegmentIndex < segments.length) {
-        translationTextDiv.textContent = segments[currentSegmentIndex].text;
-    } else {
-        translationTextDiv.textContent = "";
-    }
+  if (currentSegmentIndex >= 0 && currentSegmentIndex < segments.length) {
+    translationTextDiv.textContent = segments[currentSegmentIndex].text;
+  } else {
+    translationTextDiv.textContent = "";
+  }
 });

@@ -108,6 +108,23 @@ ipcMain.handle("dialog:openFile", handleFileOpen);
 
 ipcMain.handle("create-translation", generateTranslation);
 
+ipcMain.handle("save-translation", async (event, checksum, translation) => {
+  const cacheDir = path.join(__dirname, ".cache");
+  if (!fs.existsSync(cacheDir)) {
+    fs.mkdirSync(cacheDir);
+  }
+
+  const cacheFilePath = path.join(cacheDir, `${checksum}.json`);
+  fs.writeFileSync(cacheFilePath, JSON.stringify(translation));
+});
+
+ipcMain.handle("get-translation", async (event, checksum) => {
+  const cacheFilePath = path.join(__dirname, ".cache", `${checksum}.json`);
+  if (fs.existsSync(cacheFilePath)) {
+    return JSON.parse(fs.readFileSync(cacheFilePath));
+  }
+});
+
 // ipcMain.handle('create-translation', async (filePath) => {
 //     await
 // })
