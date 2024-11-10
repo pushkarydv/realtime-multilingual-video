@@ -155,12 +155,17 @@ const translationTextDiv = document.getElementById("translation-text");
 
 generateTranslationsButton.addEventListener("click", async () => {
   const filePath = videoPlayer.src;
+
+  generateTranslationsButton.textContent = "Generating Translations...";
+  generateTranslationsButton.disabled = true;
+
   // this will be used to uniquely identify file and fetch file form .cache folder
   const checksum = await generateSHA256ChecksumFromFilePath(filePath);
 
   // check if translation data is already present in .cache folder
   const translationData = await window.electron.getTranslation(checksum);
   if (translationData) {
+    console.log(TRANSLATION_DATA);
     TRANSLATION_DATA.push(...translationData.segments);
     generateTranslationsButton.style.display = "none";
     translationTextDiv.style.display = "block";
@@ -169,7 +174,7 @@ generateTranslationsButton.addEventListener("click", async () => {
   
   const { translation } = await window.electron.generateTranslation(filePath);
   TRANSLATION_DATA.push(...translation.segments);
-
+  console.log(TRANSLATION_DATA);
   // create a file in .cache folder with checksum as name and save the translation data
   await window.electron.saveTranslation(checksum, translation);
 
@@ -180,15 +185,15 @@ generateTranslationsButton.addEventListener("click", async () => {
 
 videoPlayer.addEventListener("timeupdate", () => {
   const segments = TRANSLATION_DATA;
-  const totalDuration = videoPlayer.duration;
   const currentTime = videoPlayer.currentTime;
 
-  const segmentDuration = totalDuration / segments.length;
-  const currentSegmentIndex = Math.floor(currentTime / segmentDuration);
-
-  if (currentSegmentIndex >= 0 && currentSegmentIndex < segments.length) {
-    translationTextDiv.textContent = segments[currentSegmentIndex].text;
-  } else {
-    translationTextDiv.textContent = "";
+  for (const segment of segments) {
+    // passing 1s gap with removing = in operators
+    if (currentTime > segment.startTime && currentTime < segment.endTime) {
+      translationTextDiv.textContent = segment.text;
+      return;
+    }
   }
+
+  translationTextDiv.textContent = "";
 });

@@ -53,13 +53,14 @@ async function generateTranslation(event, filePath) {
     temperature: 0.0,
   });
 
+  console.log(translation.segments);
 
   let _translation_object = {
     duration: translation.duration,
     segments: translation.segments.map((segment) => ({
       text: segment.text,
-      startTime: segment.startTime,
-      endTime: segment.endTime,
+      startTime: segment.start,
+      endTime: segment.end,
     })),
   };
 
