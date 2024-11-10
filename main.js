@@ -3,6 +3,7 @@ const path = require("path");
 const fs = require("fs");
 const Groq = require("groq-sdk");
 const ffmpeg = require("fluent-ffmpeg");
+const generateMatchedAudioSegments = require("./generateMatchedAudioSegments");
 require("dotenv").config();
 
 let win;
@@ -126,9 +127,21 @@ ipcMain.handle("get-translation", async (event, checksum) => {
   }
 });
 
-// ipcMain.handle('create-translation', async (filePath) => {
-//     await
-// })
+ipcMain.handle('generate-audio-segments', async (event, data) => {
+  try {
+    const { videoPath, segments } = data;
+    let newPath = videoPath.replace("file:///", "");
+    const processedSegments = await generateMatchedAudioSegments({
+      inputAudioPath: newPath,
+      segments: segments,
+      openaiApiKey: process.env.OPENAI_API_KEY,
+    });
+    return processedSegments;
+  } catch (error) {
+    console.error('Error in generating audio segments:', error);
+    throw error;
+  }
+});
 
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {

@@ -152,6 +152,8 @@ selectFileButton.addEventListener("click", async () => {
 });
 
 const translationTextDiv = document.getElementById("translation-text");
+const generateAudioButton = document.getElementById('generate-audio-button');
+
 
 generateTranslationsButton.addEventListener("click", async () => {
   const filePath = videoPlayer.src;
@@ -169,6 +171,7 @@ generateTranslationsButton.addEventListener("click", async () => {
     TRANSLATION_DATA.push(...translationData.segments);
     generateTranslationsButton.style.display = "none";
     translationTextDiv.style.display = "block";
+    generateAudioButton.style.display = 'block';
     return;
   }
   
@@ -180,6 +183,28 @@ generateTranslationsButton.addEventListener("click", async () => {
 
   generateTranslationsButton.style.display = "none";
   translationTextDiv.style.display = "block";
+  generateAudioButton.style.display = 'block';
+});
+
+generateAudioButton.addEventListener('click', async () => {
+  generateAudioButton.textContent = 'Generating Audio...';
+  generateAudioButton.disabled = true;
+
+  const data = {
+    videoPath: videoPlayer.src,
+    segments: TRANSLATION_DATA,
+  };
+
+  try {
+    const processedSegments = await window.electron.generateAudioSegments(data);
+    console.log('Processed Segments:', processedSegments);
+    // Handle the processed segments as needed
+  } catch (error) {
+    console.error('Error generating audio segments:', error);
+  }
+
+  generateAudioButton.textContent = '🎵 Generate Audio Segments';
+  generateAudioButton.disabled = false;
 });
 
 
@@ -197,3 +222,6 @@ videoPlayer.addEventListener("timeupdate", () => {
 
   translationTextDiv.textContent = "";
 });
+
+
+// integrate audio segment generation
