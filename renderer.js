@@ -1,5 +1,9 @@
 const videoPlayer = document.getElementById("videoPlayer");
 const TRANSLATION_DATA = [];
+const DATA = {
+  text: "",
+  summarization: ""
+}
 
 // Custom Method to extract audio from video
 // async function extractAudioFromVideoFile(file) {
@@ -169,22 +173,32 @@ generateTranslationsButton.addEventListener("click", async () => {
   if (translationData) {
     console.log(TRANSLATION_DATA);
     TRANSLATION_DATA.push(...translationData.segments);
+    DATA.text = translationData.text;
+    DATA.summarization = translationData.summary;
     generateTranslationsButton.style.display = "none";
     translationTextDiv.style.display = "block";
     generateAudioButton.style.display = 'block';
+    document.getElementById('summary-screen').style.display = 'block';
+    document.getElementById('summary').textContent = DATA.summarization;
     return;
   }
   
   const { translation } = await window.electron.generateTranslation(filePath);
+  const {summary} = await window.electron.generateSummarization(translation.text);
   TRANSLATION_DATA.push(...translation.segments);
   console.log(TRANSLATION_DATA);
   // create a file in .cache folder with checksum as name and save the translation data
-  await window.electron.saveTranslation(checksum, translation);
-
+  await window.electron.saveTranslation(checksum, {...translation, summary});
+  DATA.text = translation.text;
+  DATA.summarization = summary;
   generateTranslationsButton.style.display = "none";
   translationTextDiv.style.display = "block";
   generateAudioButton.style.display = 'block';
+      document.getElementById('summary-screen').style.display = 'block';
+    document.getElementById('summary').textContent = DATA.summarization;
 });
+
+
 
 generateAudioButton.addEventListener('click', async () => {
   generateAudioButton.textContent = 'Generating Audio...';

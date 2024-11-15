@@ -35,7 +35,7 @@
     </div>
     <div
         class="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 text-gray-900">
-        <div class="p-8 max-w-3xl w-full mx-4">
+        <div class="p-8 w-2/3 mx-4">
             <div class="flex flex-col items-center">
                 <div class="video-container w-full relative">
                     <video id="videoPlayer" controls
@@ -55,7 +55,7 @@
                 
                 <button type="button" id="generate-translations-button"
                     class="cursor-pointer p-2 mt-2 bg-white disabled:bg-gray-200 border rounded-lg hover:shadow-sm hidden text-lg">
-                    🔉Synthesize English Audio
+                    Process Video
                 </button>
                 <button id="generate-audio-button" class="cursor-pointer p-2 mt-2 bg-white disabled:bg-gray-200 border rounded-lg hover:shadow-sm hidden text-lg">
                     🎵 Generate Audio Segments
@@ -67,7 +67,26 @@
             <!-- Button to trigger custom algo method: extractes audio from video to m4a -->
             <!-- <button id="extractAudioButton">Extract Audio</button> -->
         </div>
+        <div class="w-1/3 h-[calc(100vh-3rem)] bg-white hidden p-8 mt-12 overflow-auto relative" id="summary-screen">
+            <p class="font-semibold">What does this video say about?</p>
+            <p id="summary"></p>
+
+
+            <div class="fixed bottom-4 right-4 flex space-x-2">
+                <a href="https://twitter.com/intent/tweet" target="_blank" onclick="this.href='https://twitter.com/intent/tweet?text=' + encodeURIComponent(document.getElementById('summary').innerText)" class="p-2 bg-blue-400 text-white rounded-lg hover:bg-blue-500">
+                    🐦 Tweet
+                </a>
+                <a href="mailto:" target="_blank" onclick="this.href='mailto:?body=' + encodeURIComponent(document.getElementById('summary').innerText)" class="p-2 text-white rounded-lg hover:bg-gray-500">
+                    ✉️ Email
+                </a>
+                <a href="#" onclick="navigator.clipboard.writeText(document.getElementById('summary').innerText); return false;" class="p-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500">
+                    📋 Copy
+                </a>
+            </div>
+            </div>
+        </div>
     </div>
+    
 
     <script src="renderer.js"></script>
 </body>

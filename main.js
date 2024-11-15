@@ -3,6 +3,9 @@ const path = require("path");
 const fs = require("fs");
 const Groq = require("groq-sdk");
 const ffmpeg = require("fluent-ffmpeg");
+const { generateObject } = require('ai')
+const { z } = require('zod')
+const { openai } = require('@ai-sdk/openai');
 const generateMatchedAudioSegments = require("./generateMatchedAudioSegments");
 require("dotenv").config();
 
@@ -19,6 +22,21 @@ async function handleFileOpen() {
   });
   if (!canceled) {
     return filePaths[0];
+  }
+}
+
+
+async function generateSummarization(event, content) {
+  const { object } = await generateObject({
+    model: openai('gpt-4o-mini-2024-07-18'),
+    apiKey: process.env.OPENAI_API_KEY,
+    schema: z.object({
+      summary: z.string(),
+    }),
+    prompt: 'Summarize the following text (this is transcript of a video, and summarize it like the summary shall tell what is overall video about with the details): ' + content,
+  });
+  return {
+    summary: object.summary || '',
   }
 }
 
@@ -58,6 +76,7 @@ async function generateTranslation(event, filePath) {
 
   let _translation_object = {
     duration: translation.duration,
+    text: translation.text,
     segments: translation.segments.map((segment) => ({
       text: segment.text,
       startTime: segment.start,
@@ -142,6 +161,8 @@ ipcMain.handle('generate-audio-segments', async (event, data) => {
     throw error;
   }
 });
+
+ipcMain.handle('generate-summarization', generateSummarization);
 
 app.on("ready", createWindow);
 app.on("window-all-closed", () => {

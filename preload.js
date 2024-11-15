@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld('electron', {
     saveTranslation: (checksum, translation) => ipcRenderer.invoke('save-translation', checksum, translation),
     getTranslation: (checksum) => ipcRenderer.invoke('get-translation', checksum),
     generateAudioSegments: (data) => ipcRenderer.invoke('generate-audio-segments', data),
+    generateSummarization: (data) => ipcRenderer.invoke('generate-summarization', data),
 });
