@@ -5,8 +5,8 @@ const Groq = require("groq-sdk");
 const ffmpeg = require("fluent-ffmpeg");
 const { generateObject } = require('ai')
 const { z } = require('zod')
-const { openai } = require('@ai-sdk/openai');
 const generateMatchedAudioSegments = require("./generateMatchedAudioSegments");
+const { google } = require("@ai-sdk/google");
 require("dotenv").config();
 
 let win;
@@ -28,8 +28,8 @@ async function handleFileOpen() {
 
 async function generateSummarization(event, content) {
   const { object } = await generateObject({
-    model: openai('gpt-4o-mini-2024-07-18'),
-    apiKey: process.env.OPENAI_API_KEY,
+    model: google('gemini-1.5-flash'),
+    apiKey: process.env.GEMINI_API_KEY,
     schema: z.object({
       summary: z.string(),
     }),
@@ -96,7 +96,7 @@ function createWindow() {
     width: 1300,
     height: 768,
     autoHideMenuBar: true,
-    titleBarStyle: "hiddenInset",
+    titleBarStyle: "custom",
     frame: false,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
